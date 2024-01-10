@@ -1,0 +1,6 @@
+/.idea/
+/vendor/
+/build/
+composer.lock
+clover.xml
+transport-tests.conf.php
