@@ -2,13 +2,13 @@
 
 namespace Olifanton\TransportTests\Commands;
 
-use danog\ClassFinder\ClassFinder;
 use Nette\PhpGenerator\Dumper;
 use Olifanton\Interop\Bytes;
 use Olifanton\Ton\Contracts\Wallets\V3\WalletV3Options;
 use Olifanton\Ton\Contracts\Wallets\V3\WalletV3R2;
-use Olifanton\TransportTests\AsCase;
-use Olifanton\TransportTests\Constants;
+use Olifanton\TransportTests\CasesFinder;
+use Olifanton\TransportTests\Configuration;
+use Olifanton\TransportTests\Environment;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,7 +39,7 @@ class Init extends Command
         if (empty($toncenterApiKey)) {
             $io
                 ->caution(
-                    "You have provided an empty Toncenter (testnet) API key. Get own key in Telegram bot https://t.me/tontestnetapibot and put key later in configuration file " . Constants::CONFIGURATION_FILE
+                    "You have provided an empty Toncenter (testnet) API key. Get own key in Telegram bot https://t.me/tontestnetapibot and put key later in configuration file " . Configuration::CONFIGURATION_FILE
                 );
         }
 
@@ -53,24 +53,12 @@ class Init extends Command
                 isTestOnly: false,
             );
 
-        $workdir = getcwd();
-        $outfile = $workdir . DIRECTORY_SEPARATOR . Constants::CONFIGURATION_FILE;
-        $classes = ClassFinder::getClassesInNamespace("Olifanton\\TransportTests", ClassFinder::RECURSIVE_MODE);
+        $outfile = Configuration::getPath();
 
-        if (file_exists($outfile)) {
+        if (Configuration::isCreated()) {
             $io->error("Configuration file " . $outfile . " exists");
 
             return self::FAILURE;
-        }
-
-        $cases = [];
-
-        foreach ($classes as $class) {
-            if ($caseAttribs = (new \ReflectionClass($class))->getAttributes(AsCase::class)) {
-                /** @var AsCase $caseConfig */
-                $caseConfig = $caseAttribs[0]->newInstance();
-                $cases[$caseConfig->alias] = $class;
-            }
         }
 
         $result = [
@@ -79,7 +67,8 @@ class Init extends Command
                 "address" => $deploymentWalletAddress,
             ],
             "toncenter_api_key" => $toncenterApiKey,
-            "cases" => $cases,
+            "env" => Environment::class,
+            "cases" => CasesFinder::getCases(),
         ];
         $dumper = new Dumper();
         $dumper->indentation = str_repeat(" ", 4);
