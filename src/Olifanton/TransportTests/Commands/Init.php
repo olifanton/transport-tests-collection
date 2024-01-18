@@ -68,6 +68,7 @@ class Init extends Command
             ],
             "toncenter_api_key" => $toncenterApiKey,
             "env" => Environment::class,
+            "runtime" => null,
             "cases" => CasesFinder::getCases(),
         ];
         $dumper = new Dumper();
@@ -86,7 +87,7 @@ class Init extends Command
         );
         $io->info([
             "Configuration file path: " . $outfile,
-            "Don't forget to add the configuration file to version control system ignore list (.gitignore)",
+            "Don't forget to add the configuration file to version control system ignore list (.gitignore) and implement Runtime",
         ]);
 
         return self::SUCCESS;

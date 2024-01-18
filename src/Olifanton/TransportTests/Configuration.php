@@ -16,6 +16,15 @@ final class Configuration
         return getcwd() . DIRECTORY_SEPARATOR . self::CONFIGURATION_FILE;
     }
 
+    /**
+     * @return array{
+     *     deployment_wallet: array{secret_key: string, class: class-string, address: string},
+     *     env: class-string,
+     *     runtime: class-string|null,
+     *     toncenter_api_key: string,
+     *     cases: array<string, class-string>
+     * }
+     */
     public static function read(): array
     {
         $path = self::getPath();

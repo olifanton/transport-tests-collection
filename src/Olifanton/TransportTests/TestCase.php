@@ -8,7 +8,6 @@ use Psr\Log\LoggerInterface;
 abstract class TestCase
 {
     public function __construct(
-        protected readonly Runtime $runtime,
         protected readonly Environment $environment,
         protected readonly LoggerInterface $logger,
     ) {}
