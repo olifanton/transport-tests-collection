@@ -74,11 +74,9 @@ class DeployCustomContract extends TestCase
             $awaiter = new ContractAwaiter($transport);
             $awaiter->waitForActive($exampleContract->getAddress());
 
-            $this->logger->info("Done!");
-
-            return new TestResult(true, null, null);
+            return new TestResult(true, null);
         } catch (\Throwable $e) {
-            return new TestResult(false, "Unhandled exception", $e);
+            return new TestResult(false, $e);
         }
     }
 }

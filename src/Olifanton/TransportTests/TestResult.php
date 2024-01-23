@@ -8,7 +8,6 @@ class TestResult
 {
     public function __construct(
         public readonly bool $isSuccess,
-        public readonly ?string $message,
         public readonly ?Throwable $error,
     ) {}
 }
