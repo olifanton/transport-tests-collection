@@ -5,7 +5,6 @@ namespace Olifanton\TransportTests\TcRuntime;
 use Olifanton\Ton\Transports\Toncenter\ToncenterTransport;
 use Olifanton\TransportTests\TcClient;
 use Olifanton\TransportTests\TestCase;
-use Olifanton\TransportTests\TestResult;
 
 class Runtime implements \Olifanton\TransportTests\Runtime
 {
@@ -18,9 +17,9 @@ class Runtime implements \Olifanton\TransportTests\Runtime
         // Nothing
     }
 
-    public function run(TestCase $case): TestResult
+    public function run(TestCase $case): void
     {
-        return $case->run($this->transport);
+        $case->run($this->transport);
     }
 
     public function tearDown(): void

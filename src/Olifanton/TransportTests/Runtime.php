@@ -6,7 +6,7 @@ interface Runtime
 {
     public function setUp(): void;
 
-    public function run(TestCase $case): TestResult;
+    public function run(TestCase $case): void;
 
     public function tearDown(): void;
 

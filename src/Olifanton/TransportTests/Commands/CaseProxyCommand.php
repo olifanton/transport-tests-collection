@@ -3,10 +3,7 @@
 namespace Olifanton\TransportTests\Commands;
 
 use Olifanton\Interop\Units;
-use Olifanton\TransportTests\BalanceFetcher;
-use Olifanton\TransportTests\Environment;
-use Olifanton\TransportTests\TestCase;
-use Psr\Log\LogLevel;
+use Olifanton\TransportTests\ManagedRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;
@@ -35,54 +32,34 @@ class CaseProxyCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
-        $io = new SymfonyStyle($input, $output);
+        $o = new SymfonyStyle($input, $output);
         $logger = new ConsoleLogger($output);
-        $preBalance = BalanceFetcher::getBalance();
 
-        $logger->log(LogLevel::INFO, sprintf(
-            "Deployment wallet current balance: %s TON",
-            Units::fromNano($preBalance),
+        $runner = new ManagedRunner([
+            $this->name => $this->caseClass,
+        ]);
+        $results = $runner->run($logger, $o);
+
+        $logger->info(sprintf(
+            "Spent for cases: %s TON",
+            Units::fromNano($results->getTonSpent()),
+        ));
+        $logger->info(sprintf(
+            "Execution time: %f sec.",
+            $results->getExecutionTime(),
         ));
 
-        $env = Environment::getInstance();
-        $runtime = $env->getRuntime();
-        /** @var TestCase $case */
-        $case = new $this->caseClass(
-            $env,
-            $logger,
-        );
+        if (!$results->isSuccess()) {
+            foreach ($results->failed as $result) {
+                $o->error(array_merge([sprintf(
+                    "Error: %s",
+                    $result->error?->getMessage(),
+                )], $result->error?->getTrace() ?? []));
+            }
 
-        $runtime->setUp();
-        $result = $runtime->run($case);
-        $runtime->tearDown();
-
-        if ($result->isSuccess) {
-            $logger->info(sprintf(
-                "Case \"%s\" completed",
-                $this->name,
-            ));
-            sleep(1);
-            $logger->info(sprintf(
-                "Spent for case: %s TON",
-                Units::fromNano($preBalance->minus(BalanceFetcher::getBalance())),
-            ));
-
-            return self::SUCCESS;
+            return self::FAILURE;
         }
 
-        $e = $result->error;
-        $logger->error(sprintf(
-            "Case \"%s\" failed! Error: %s",
-            $this->name,
-            $e?->getMessage(),
-        ));
-
-        if ($e) {
-            $io->error(
-                array_merge(["Unhandled exception: " . $e->getMessage()], $e->getTrace()),
-            );
-        }
-
-        return self::FAILURE;
+        return self::SUCCESS;
     }
 }

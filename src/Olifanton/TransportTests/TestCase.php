@@ -9,8 +9,9 @@ abstract class TestCase
 {
     public function __construct(
         protected readonly Environment $environment,
+        protected readonly Context $context,
         protected readonly LoggerInterface $logger,
     ) {}
 
-    abstract public function run(Transport $transport): TestResult;
+    abstract public function run(Transport $transport): void;
 }
