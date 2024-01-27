@@ -2,6 +2,8 @@
 
 namespace Olifanton\TransportTests;
 
+use Nette\PhpGenerator\Dumper;
+
 final class Configuration
 {
     public const CONFIGURATION_FILE = "transport-tests.conf.php";
@@ -34,5 +36,12 @@ final class Configuration
         }
 
         return include $path;
+    }
+
+    public static function save(array $config): void
+    {
+        $dumper = new Dumper();
+        $dumper->indentation = str_repeat(" ", 4);
+        file_put_contents(self::getPath(), "<?php return " . $dumper->dump($config) . ";" . PHP_EOL);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Olifanton\TransportTests\Commands;
 
-use Nette\PhpGenerator\Dumper;
 use Olifanton\Interop\Bytes;
 use Olifanton\Ton\Contracts\Wallets\V3\WalletV3Options;
 use Olifanton\Ton\Contracts\Wallets\V3\WalletV3R2;
@@ -61,7 +60,7 @@ class Init extends Command
             return self::FAILURE;
         }
 
-        $result = [
+        $config = [
             "deployment_wallet" => [
                 "secret_key" => Bytes::bytesToBase64($kp->secretKey),
                 "address" => $deploymentWalletAddress,
@@ -71,9 +70,7 @@ class Init extends Command
             "runtime" => null,
             "cases" => CasesFinder::getCases(),
         ];
-        $dumper = new Dumper();
-        $dumper->indentation = str_repeat(" ", 4);
-        file_put_contents($outfile, "<?php return " . $dumper->dump($result) . ";" . PHP_EOL);
+        Configuration::save($config);
 
         $io->success("Done!");
         $io->block(
