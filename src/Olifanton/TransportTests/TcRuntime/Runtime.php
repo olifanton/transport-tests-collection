@@ -6,7 +6,7 @@ use Olifanton\Ton\Transports\Toncenter\ToncenterTransport;
 use Olifanton\TransportTests\TcClient;
 use Olifanton\TransportTests\TestCase;
 
-class Runtime implements \Olifanton\TransportTests\Runtime
+final class Runtime implements \Olifanton\TransportTests\Runtime
 {
     protected static ?Runtime $instance = null;
 

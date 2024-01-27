@@ -18,6 +18,9 @@ class RescanCases extends Command
         $this->setDescription("Re-scan and save test cases");
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
