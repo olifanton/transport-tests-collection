@@ -3,6 +3,7 @@
 namespace Olifanton\TransportTests;
 
 use Olifanton\TransportTests\Exceptions\AssertException;
+use Olifanton\TransportTests\Exceptions\TraceMapper;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -65,7 +66,7 @@ class ManagedRunner
                 $currentBalance = BalanceFetcher::getBalance();
                 $spent = $previousBalance->minus($currentBalance);
                 $previousBalance = $currentBalance;
-                $successful[$name] = new TestResult(
+                $failed[$name] = new TestResult(
                     false,
                     $spent,
                     microtime(true) - $timeStart,
@@ -78,7 +79,7 @@ class ManagedRunner
                     "Case \"%s\" failed! Unhandled exception: %s",
                     $name,
                     $e->getMessage(),
-                )], $e->getTrace()));
+                )], TraceMapper::map($e->getTrace())));
                 break;
             }
         }

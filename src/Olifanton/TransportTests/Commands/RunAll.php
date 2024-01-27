@@ -4,6 +4,8 @@ namespace Olifanton\TransportTests\Commands;
 
 use Olifanton\Interop\Units;
 use Olifanton\TransportTests\Configuration;
+use Olifanton\TransportTests\Exceptions\AssertException;
+use Olifanton\TransportTests\Exceptions\TraceMapper;
 use Olifanton\TransportTests\ManagedRunner;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -41,11 +43,18 @@ class RunAll extends Command
         }
 
         foreach ($results->failed as $name => $result) {
-            $o->error(array_merge([sprintf(
-                "%s: Error: %s",
-                $name,
-                $result->error?->getMessage(),
-            )], $result->error?->getTrace() ?? []));
+            $o->error(
+                array_merge(
+                    [
+                        sprintf(
+                            "%s: Error: %s",
+                            $name,
+                            $result->error?->getMessage(),
+                        )
+                    ],
+                    !$result->error instanceof AssertException ? TraceMapper::map($result->error?->getTrace() ?? []) : [],
+                )
+            );
         }
 
         $o->newLine();

@@ -3,6 +3,8 @@
 namespace Olifanton\TransportTests\Commands;
 
 use Olifanton\Interop\Units;
+use Olifanton\TransportTests\Exceptions\AssertException;
+use Olifanton\TransportTests\Exceptions\TraceMapper;
 use Olifanton\TransportTests\ManagedRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -51,10 +53,14 @@ class CaseProxyCommand extends Command
 
         if (!$results->isSuccess()) {
             foreach ($results->failed as $result) {
-                $o->error(array_merge([sprintf(
-                    "Error: %s",
-                    $result->error?->getMessage(),
-                )], $result->error?->getTrace() ?? []));
+                $o->error(
+                    array_merge(
+                        [
+                            sprintf("Error: %s", $result->error?->getMessage())
+                        ],
+                        !$result->error instanceof AssertException ? TraceMapper::map($result->error?->getTrace() ?? []) : [],
+                    )
+                );
             }
 
             return self::FAILURE;

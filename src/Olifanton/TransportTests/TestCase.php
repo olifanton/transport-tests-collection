@@ -3,6 +3,7 @@
 namespace Olifanton\TransportTests;
 
 use Olifanton\Interop\Address;
+use Olifanton\Interop\Bytes;
 use Olifanton\Ton\ContractAwaiter;
 use Olifanton\Ton\Contracts\Wallets\Wallet;
 use Olifanton\Ton\Exceptions\AwaiterMaxTimeException;
@@ -42,5 +43,43 @@ abstract class TestCase
         }
 
         $this->context->assert($isActiveContract, $message);
+    }
+
+    public function assertAddress(Address $expected, ?Address $actual, ?string $message = null): void
+    {
+        if (!$actual) {
+            $this
+                ->context
+                ->assert(
+                    false,
+                    sprintf(
+                        "%sFailed asserting address, expected: %s, actual: null",
+                        $message ? ($message . ": ") : "",
+                        $expected->toString(
+                            isUserFriendly: true, isUrlSafe: true, isBounceable: false, isTestOnly: false,
+                        ),
+                    ),
+                );
+            return;
+        }
+
+        $this
+            ->context
+            ->assert(
+                Bytes::compareBytes(
+                    $expected->getHashPart(),
+                    $actual->getHashPart(),
+                ),
+                sprintf(
+                    "%sFailed asserting address, expected: %s, actual: %s",
+                    $message ? ($message . ": ") : "",
+                    $expected->toString(
+                        isUserFriendly: true, isUrlSafe: true, isBounceable: false, isTestOnly: false,
+                    ),
+                    $actual->toString(
+                        isUserFriendly: true, isUrlSafe: true, isBounceable: false, isTestOnly: false,
+                    ),
+                ),
+            );
     }
 }
