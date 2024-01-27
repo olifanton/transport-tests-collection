@@ -2,7 +2,12 @@
 
 namespace Olifanton\TransportTests;
 
+use Olifanton\Interop\Address;
+use Olifanton\Ton\ContractAwaiter;
+use Olifanton\Ton\Contracts\Wallets\Wallet;
+use Olifanton\Ton\Exceptions\AwaiterMaxTimeException;
 use Olifanton\Ton\Transport;
+use Olifanton\TypedArrays\Uint8Array;
 use Psr\Log\LoggerInterface;
 
 abstract class TestCase
@@ -14,4 +19,28 @@ abstract class TestCase
     ) {}
 
     abstract public function run(Transport $transport): void;
+
+    public function getSecretKey(): Uint8Array
+    {
+        return $this->environment->getSecretKey();
+    }
+
+    public function getDeployWallet(): Wallet
+    {
+        return $this->environment->getDeployWallet();
+    }
+
+    public function assertActiveContract(Transport $transport, Address $address, string $message): void
+    {
+        $awaiter = new ContractAwaiter($transport);
+
+        try {
+            $awaiter->waitForActive($address);
+            $isActiveContract = true;
+        } catch (AwaiterMaxTimeException $e) {
+            $isActiveContract = false;
+        }
+
+        $this->context->assert($isActiveContract, $message);
+    }
 }

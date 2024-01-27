@@ -10,6 +10,7 @@ use Olifanton\Ton\Contracts\Wallets\V3\WalletV3R1;
 use Olifanton\Ton\Contracts\Wallets\V3\WalletV3R2;
 use Olifanton\Ton\Contracts\Wallets\Wallet;
 use Olifanton\Ton\Contracts\Wallets\WalletOptions;
+use Olifanton\TypedArrays\Uint8Array;
 
 class Environment
 {
@@ -58,11 +59,6 @@ class Environment
         return self::$instance;
     }
 
-    protected function createWalletOptions(): WalletOptions
-    {
-        throw new \RuntimeException("Not implemented, Implement your own Environment");
-    }
-
     public function getRuntime(): Runtime
     {
         if (!$this->runtime) {
@@ -76,5 +72,15 @@ class Environment
         }
 
         return $this->runtime;
+    }
+
+    public function getSecretKey(): Uint8Array
+    {
+        return $this->deploymentWalletKP->secretKey;
+    }
+
+    protected function createWalletOptions(): WalletOptions
+    {
+        throw new \RuntimeException("Not implemented, Implement your own Environment");
     }
 }

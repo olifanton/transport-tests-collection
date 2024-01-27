@@ -4,17 +4,15 @@ namespace Olifanton\TransportTests\Cases\Deployer;
 
 use Olifanton\Interop\Boc\Cell;
 use Olifanton\Interop\Units;
-use Olifanton\Ton\ContractAwaiter;
 use Olifanton\Ton\Contracts\AbstractContract;
 use Olifanton\Ton\Contracts\ContractOptions;
 use Olifanton\Ton\DeployOptions;
-use Olifanton\Ton\Exceptions\AwaiterMaxTimeException;
 use Olifanton\Ton\Transport;
 use Olifanton\TransportTests\AsCase;
 use Olifanton\TransportTests\TestCase;
 
 #[AsCase("deployer:custom-contract")]
-class DeployCustomContract extends TestCase
+final class DeployCustomContract extends TestCase
 {
     /**
      * @throws \Throwable
@@ -25,7 +23,7 @@ class DeployCustomContract extends TestCase
         $deployer->setLogger($this->logger);
         $this->logger->debug("Deployer created");
 
-        $deployWallet = $this->environment->getDeployWallet();
+        $deployWallet = $this->getDeployWallet();
 
         $exampleContract = new class(new ContractOptions()) extends AbstractContract
         {
@@ -61,7 +59,7 @@ class DeployCustomContract extends TestCase
 
         $deployOptions = new DeployOptions(
             $deployWallet,
-            $this->environment->deploymentWalletKP->secretKey,
+            $this->getSecretKey(),
             Units::toNano("0.05"),
         );
         $fee = $deployer->estimateFee($deployOptions, $exampleContract);
@@ -69,15 +67,6 @@ class DeployCustomContract extends TestCase
         $deployer->deploy($deployOptions, $exampleContract);
 
         $this->logger->debug("Wait for contract \"Active\" state");
-        $awaiter = new ContractAwaiter($transport);
-
-        try {
-            $awaiter->waitForActive($exampleContract->getAddress());
-            $isActiveContract = true;
-        } catch (AwaiterMaxTimeException $e) {
-            $isActiveContract = false;
-        }
-
-        $this->context->assert($isActiveContract, "Contract activated");
+        $this->assertActiveContract($transport, $exampleContract->getAddress(), "Contract activated");
     }
 }
