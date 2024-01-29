@@ -57,7 +57,7 @@
     ]
   },
   "bin": [
-    "bin/transport-tests"
+    "transport-tests"
   ],
   "minimum-stability": "dev",
   "prefer-stable": true,

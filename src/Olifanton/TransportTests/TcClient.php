@@ -2,8 +2,6 @@
 
 namespace Olifanton\TransportTests;
 
-use Http\Client\Common\HttpMethodsClient;
-use Http\Discovery\Psr17FactoryDiscovery;
 use Olifanton\Ton\Transports\Toncenter\ClientOptions;
 use Olifanton\Ton\Transports\Toncenter\ToncenterHttpV2Client;
 
@@ -15,11 +13,7 @@ class TcClient
     {
         if (!self::$client) {
             self::$client = new ToncenterHttpV2Client(
-                new HttpMethodsClient(
-                    \Http\Discovery\Psr18ClientDiscovery::find(),
-                    Psr17FactoryDiscovery::findRequestFactory(),
-                    Psr17FactoryDiscovery::findStreamFactory(),
-                ),
+                HttpClient::discovery(),
                 new ClientOptions(
                     baseUri: "https://testnet.toncenter.com/api/v2",
                     apiKey: Environment::getInstance()->config["toncenter_api_key"],

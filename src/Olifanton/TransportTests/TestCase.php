@@ -31,6 +31,11 @@ abstract class TestCase
         return $this->environment->getDeployWallet();
     }
 
+    public function assert(bool $condition, string $message): void
+    {
+        $this->context->assert($condition, $message);
+    }
+
     public function assertActiveContract(Transport $transport, Address $address, string $message): void
     {
         $awaiter = new ContractAwaiter($transport);
