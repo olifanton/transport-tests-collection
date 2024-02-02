@@ -87,4 +87,34 @@ abstract class TestCase
                 ),
             );
     }
+
+    /**
+     * @throws \Olifanton\Ton\Transports\Toncenter\Exceptions\ClientException
+     * @throws \Olifanton\Ton\Transports\Toncenter\Exceptions\TimeoutException
+     * @throws \Olifanton\Ton\Transports\Toncenter\Exceptions\ValidationException
+     */
+    public function expectTransaction(Address $from, Address $to, string $message): void
+    {
+        $transactions = TcClient::getInstance()->getTransactions(
+            $from,
+            1,
+            archival: false,
+        );
+
+        if (count($transactions->items) === 1) {
+            $transaction = $transactions->items[0];
+
+            $this->assert(
+                Bytes::compareBytes(
+                    (new Address($transaction->inMsg->destination))->getHashPart(),
+                    $to->getHashPart(),
+                ),
+                $message,
+            );
+        }
+
+        $this
+            ->context
+            ->assert(false, $message);
+    }
 }
