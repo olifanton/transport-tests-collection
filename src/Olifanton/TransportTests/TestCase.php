@@ -93,25 +93,33 @@ abstract class TestCase
      * @throws \Olifanton\Ton\Transports\Toncenter\Exceptions\TimeoutException
      * @throws \Olifanton\Ton\Transports\Toncenter\Exceptions\ValidationException
      */
-    public function expectTransaction(Address $from, Address $to, string $message): void
+    public function expectTransaction(Address $from, Address $to, string $message, int $maxWaiting = 20): void
     {
-        $transactions = TcClient::getInstance()->getTransactions(
-            $from,
-            1,
-            archival: false,
-        );
+        $pollStart = time();
+        $timeEnd = $pollStart + $maxWaiting;
 
-        if (count($transactions->items) === 1) {
+        do {
+            $transactions = TcClient::getInstance()->getTransactions(
+                $to,
+                1,
+                archival: false,
+            );
+
+            $count = count($transactions->items);
+
+            if ($count === 0) {
+                sleep(2);
+                continue;
+            }
+
             $transaction = $transactions->items[0];
-
-            $this->assert(
-                Bytes::compareBytes(
-                    (new Address($transaction->inMsg->destination))->getHashPart(),
-                    $to->getHashPart(),
-                ),
+            $this->assertAddress(
+                new Address($transaction->inMsg->source),
+                $from,
                 $message,
             );
-        }
+            return;
+        } while (time() < $timeEnd);
 
         $this
             ->context
