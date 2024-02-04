@@ -10,6 +10,7 @@ use Olifanton\TransportTests\Configuration;
 use Olifanton\TransportTests\Environment;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\HelperInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -30,10 +31,12 @@ class Init extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
+        /** @var HelperInterface $helper */
         $helper = $this->getHelper('question');
         $tcApiKeyQuestion = new Question("Enter API key for https://testnet.toncenter.com/: ", "");
 
-        $toncenterApiKey = trim($helper->ask($input, $output, $tcApiKeyQuestion));
+        /** @noinspection PhpPossiblePolymorphicInvocationInspection */
+        $toncenterApiKey = trim($helper->ask($input, $output, $tcApiKeyQuestion)); // @phpstan-ignore-line
 
         if (empty($toncenterApiKey)) {
             $io

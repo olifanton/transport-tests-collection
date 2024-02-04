@@ -30,7 +30,7 @@ class RunAll extends Command
         $o = new SymfonyStyle($input, $output);
         $logger = new ConsoleLogger($output);
 
-        $runner = new ManagedRunner(Configuration::read()["cases"] ?? []);
+        $runner = new ManagedRunner(Configuration::read()["cases"]);
         $results = $runner->run($logger, $o);
 
         foreach ($results->successful as $name => $result) {

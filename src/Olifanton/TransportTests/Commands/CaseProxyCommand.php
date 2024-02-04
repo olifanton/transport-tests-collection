@@ -15,7 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class CaseProxyCommand extends Command
 {
     public function __construct(
-        private readonly string $name,
+        private readonly ?string $name,
         private readonly string $caseClass,
     )
     {

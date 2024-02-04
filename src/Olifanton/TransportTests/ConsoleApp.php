@@ -20,9 +20,7 @@ class ConsoleApp extends Application
         ];
 
         if (Configuration::isCreated()) {
-            $cases = Configuration::read()["cases"] ?? [];
-
-            foreach ($cases as $commandName => $caseClass) {
+            foreach (Configuration::read()["cases"] as $commandName => $caseClass) {
                 $commands[] = new CaseProxyCommand($commandName, $caseClass);
             }
 
