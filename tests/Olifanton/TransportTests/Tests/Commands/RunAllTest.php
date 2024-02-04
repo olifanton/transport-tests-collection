@@ -29,7 +29,7 @@ class RunAllTest extends TestCase
         $this->toncenterV2ClientMock = \Mockery::mock(ToncenterV2Client::class); // @phpstan-ignore-line
         $this->runtimeMock = \Mockery::mock(Runtime::class); // @phpstan-ignore-line
         TcClientMock::$mocked = $this->toncenterV2ClientMock; // @phpstan-ignore-line
-        MockableRuntime::setMock($this->runtimeMock);
+        MockableRuntime::setMock($this->runtimeMock);  // @phpstan-ignore-line
     }
 
     protected function tearDown(): void
@@ -43,26 +43,24 @@ class RunAllTest extends TestCase
      */
     public function testExecute(): void
     {
-        // Stubs
-
-        // Mocks
-
-        // Console
+        // Console mocks
         $inputMock = \Mockery::mock(Input::class);
 
-        $inputMock->shouldReceive("bind");
-        $inputMock->shouldReceive("isInteractive")->andReturnFalse();
-        $inputMock->shouldReceive("hasArgument")->andReturnFalse();
-        $inputMock->shouldReceive("validate");
+        $inputMock->shouldReceive("bind"); // @phpstan-ignore-line
+        $inputMock->shouldReceive("isInteractive")->andReturnFalse();  // @phpstan-ignore-line
+        $inputMock->shouldReceive("hasArgument")->andReturnFalse();  // @phpstan-ignore-line
+        $inputMock->shouldReceive("validate");  // @phpstan-ignore-line
 
-        // Balance
+        // Balance mock
+        // @phpstan-ignore-next-line
         $this
             ->toncenterV2ClientMock
             ->shouldReceive("getAddressBalance")
             ->with(IsEqual::equalTo(Environment::getInstance()->deploymentWalletAddr))
             ->andReturn(Units::toNano(10));
 
-        // Runtime
+        // Runtime mock
+        // @phpstan-ignore-next-line
         $this
             ->runtimeMock
             ->shouldReceive("run")
@@ -72,7 +70,7 @@ class RunAllTest extends TestCase
         $this->assertEquals(
             Command::SUCCESS,
             (new RunAll())->run(
-                $inputMock,
+                $inputMock, // @phpstan-ignore-line
                 new NullOutput(),
             ),
         );
