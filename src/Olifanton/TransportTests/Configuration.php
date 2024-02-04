@@ -15,6 +15,10 @@ final class Configuration
 
     public static function getPath(): string
     {
+        if (defined("TRANSPORTS_TESTS_CONF_FILE_PATH")) {
+            return TRANSPORTS_TESTS_CONF_FILE_PATH;
+        }
+
         return getcwd() . DIRECTORY_SEPARATOR . self::CONFIGURATION_FILE;
     }
 

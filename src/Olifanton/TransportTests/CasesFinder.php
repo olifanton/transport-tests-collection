@@ -12,7 +12,10 @@ final class CasesFinder
      */
     public static function getCases(): array
     {
-        $classes = ClassFinder::getClassesInNamespace("Olifanton\\TransportTests", ClassFinder::RECURSIVE_MODE);
+        $classes = ClassFinder::getClassesInNamespace(
+            "Olifanton\\TransportTests\\Cases",
+            ClassFinder::RECURSIVE_MODE,
+        );
         $cases = [];
 
         foreach ($classes as $class) {
