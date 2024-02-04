@@ -12,8 +12,5 @@ class FooBarCase extends TestCase
     /**
      * @inheritDoc
      */
-    public function run(Transport $transport): void
-    {
-        // TODO: Implement run() method.
-    }
+    public function run(Transport $transport): void {}
 }
