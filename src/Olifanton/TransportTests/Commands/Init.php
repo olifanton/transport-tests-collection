@@ -67,6 +67,7 @@ class Init extends Command
             "deployment_wallet" => [
                 "secret_key" => Bytes::bytesToBase64($kp->secretKey),
                 "address" => $deploymentWalletAddress,
+                "class" => WalletV3R2::class,
             ],
             "toncenter_api_key" => $toncenterApiKey,
             "env" => Environment::class,
